@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/Granze/react-starterify",
   "dependencies": {
+    "lodash": "^3.9.3",
     "react": "^0.13.3",
     "react-router": "^0.13.3",
     "superagent": "^1.2.0"

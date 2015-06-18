@@ -1,3 +1,35 @@
 *, *:before, *:after {
   box-sizing: border-box;
 }
+.container {
+	max-width: 100%;
+	width: 1200px;
+	margin: 0 auto;
+}
+.filters {
+	display: flex;
+	height: 50px;
+	line-height: 50px;
+	cursor: pointer;
+	.filter {
+		position: relative;
+		width: 150px;
+		text-align: center;
+		background: tomato;
+		color: #fff;
+		+ .filter {
+			margin-left: 15px;
+			background: darken(tomato, 8%);
+		}
+		.list {
+			position: absolute;
+			top: 50px;
+			left: 0;
+			right: 0;
+			background: lighten(tomato, 15%);
+			> div:hover {
+				background: darken(tomato, 15%);
+			}
+		}
+	}
+}
