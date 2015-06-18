@@ -21,7 +21,7 @@ let Filter = React.createClass({
 					{ this.state.showElements ? list : null }
 				</div>
 			</div>
-			);
+		);
 	}
 });
 
@@ -29,7 +29,6 @@ let Filters = React.createClass({
 
 	getTitleActive: function (data, id) {
 		var active = _.find(data, {'id': id});
-
 		if (active) {
 			return active;
 		} else {
@@ -108,20 +107,20 @@ let Recipes = React.createClass({
 });
 
 var recipesData = [
-{
-	id: 1,
-	title: 'recipe 1',
-		tag: 51//[51, 52, 111]
+	{
+		id: 1,
+		title: 'recipe 1',
+		tag: [51, 52, 111]
 	},
 	{
 		id: 2,
 		title: 'recipe 2',
-		tag: 52//[52, 112]
+		tag: [51, 52, 112]
 	},
 	{
 		id: 3,
 		title: 'recipe 3',
-		tag: 53//[53, 113, 112]
+		tag: [53, 113, 112]
 	}
 	];
 
@@ -135,12 +134,12 @@ var recipesData = [
 		},
 
 		filterElements: function (id) {
-			let recipesFiltered = this.state.recipesFiltered;
+			let recipesFiltered = [];
 
 			if (id) {
 				recipesData.forEach((el) => {
-					if (el.tag === id) {
-						recipesFiltered = [];
+					if (el.tag.indexOf(id) > -1) {
+						
 						recipesFiltered.push(el);
 					}
 				});
@@ -163,7 +162,7 @@ var recipesData = [
 					<Filters filterElements={this.filterElements} activeFilter={titleFilterBlockId} />
 					<Recipes data={recipesFiltered} />
 				</div>
-				);
+			);
 		}
 
 	});
