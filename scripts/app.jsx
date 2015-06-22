@@ -4,6 +4,7 @@ import Router from 'react-router';
 import Root from './components/shared/Root.jsx';
 import Index from './components/index/Index.jsx';
 import About from './components/about/About.jsx';
+import Recipe from './components/single-recipe/Recipe.jsx';
 let {DefaultRoute, Route, Link, RouteHandler} = Router;
 
 window.React = React;
@@ -12,6 +13,7 @@ var routes = (
 	<Route handler={Root} path="/">
 		<DefaultRoute handler={Index}/>
 		<Route path="about" handler={About}/>
+		<Route path="recipe/:id" handler={Recipe} />
 	</Route>
 );
 

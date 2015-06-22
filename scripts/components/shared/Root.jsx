@@ -1,5 +1,6 @@
 import React from 'react';
 import Router from 'react-router';
+import Header from './Header.jsx';
 
 let {Link, RouteHandler} = Router;
 
@@ -9,10 +10,7 @@ var Root = React.createClass({
 	render: function () {
 		return (
 			<div>
-				<header>
-					<Link to="/">Index</Link>
-					<Link to="/about">About</Link>
-				</header>
+				<Header />
 				<RouteHandler />
 			</div>
 		);

@@ -1,24 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
+import mockData from '../../../mock.data.json';
+
+
+let recipesData = mockData.recipesData,
+	products = mockData.products,
+	sides = mockData.sides;
 
 let Filter = React.createClass({
-	getInitialState: function() {
-		return { 
-			showElements: false
-		};
-	},
-	showList: function(visible) {
-		this.setState({ showElements: !visible });
-	},
 	render: function () {
 		let props = this.props,
 		list = props.data.map((el, i) => <div key={i} onClick={props.filterElements.bind(null, el.id)}>{el.title}</div>),
 		filterTitle = props.activeFilter.title;
 		return (
-			<div className="filter" onClick={this.showList.bind(null, this.state.showElements)}>
+			<div className="filter" onClick={props.showList.bind(null, props.showElements, filterTitle)}>
 				{filterTitle}
 				<div className="list">
-					{ this.state.showElements ? list : null }
+					{ this.props.showElements ? list : null }
 				</div>
 			</div>
 		);
@@ -26,7 +24,27 @@ let Filter = React.createClass({
 });
 
 let Filters = React.createClass({
+	getInitialState: function () {
+		return {
+			showProdElements: false,
+			showSideElements: false
+		};
+	},
+	showList: function (visible, filterTitle) {
 
+		let titles = _.pluck(products, 'title');
+		if (titles.indexOf(filterTitle) >= 0 ) {
+			this.setState({
+				showProdElements: !visible,
+				showSideElements: false
+			});
+		} else {
+			this.setState({
+				showProdElements: false,
+				showSideElements: !visible
+			});
+		}
+	},
 	getTitleActive: function (data, id) {
 		var active = _.find(data, {'id': id});
 		if (active) {
@@ -37,53 +55,37 @@ let Filters = React.createClass({
 	},
 	render: function () {
 
-		let products = [
-			{
-				id: 0,
-				title: 'Tutti i prodotti'
-			},
-			{
-				id: 51,
-				title: 'Proscitto cotto'
-			},
-			{
-				id: 52,
-				title: 'Salame'
-			},
-			{
-				id: 53,
-				title: 'Bresaola'
-			}
-		];
-		let sides = [
-			{
-				id: 0,
-				title: 'Tutti i piatti'
-			},
-			{
-				id: 111,
-				title: 'Primo Piatto'
-			},
-			{
-				id: 112,
-				title: 'Secondo Piatto'
-			},
-			{
-				id: 113,
-				title: 'Dessert'
-			}
-		];
-		
+		let style = {
+			display: 'flex',
+			flexFlow: 'row wrap',
+			justifyContent: 'center'
+		};
+
+		// let filterList = [products, sides].map(function (el) {
+
+		// 	return (
+		// 		<Filter data={el}
+		// 				filterElements={this.props.filterElements}
+		// 				activeFilter={this.getTitleActive(el, this.props.activeFilter)}
+		// 				showList={this.showList}
+		// 				showElements={this.state.showElements} />
+		// 	);
+		// });
 		return (
-			<div className="filters">
-				<Filter data={products} 
-						filterElements={this.props.filterElements} 
-						activeFilter={this.getTitleActive(products, this.props.activeFilter)} />
-				<Filter data={sides} 
-						filterElements={this.props.filterElements} 
-						activeFilter={this.getTitleActive(sides, this.props.activeFilter)}/>
+			<div className="filters" style={style}>
+
+				<Filter data={products}
+						filterElements={this.props.filterElements}
+						activeFilter={this.getTitleActive(products, this.props.activeFilter)}
+						showList={this.showList}
+						showElements={this.state.showProdElements} />
+				<Filter data={sides}
+						filterElements={this.props.filterElements}
+						activeFilter={this.getTitleActive(sides, this.props.activeFilter)}
+						showList={this.showList}
+						showElements={this.state.showSideElements} />
 			</div>
-			);
+		);
 	}
 });
 
@@ -91,97 +93,84 @@ let Recipes = React.createClass({
 
 	render: function () {
 
-		let recipesData = this.props.data,
-		recipesList = recipesData.map((recipe, i) => 
-			<div key={i}>
-				<img src="http://placehold.it/350x150" />
-				<h2>{recipe.title}</h2>
-			</div>);
-
+		let data = this.props.data,
+			recipesList = data.map((recipe, i) =>
+				<a key={i} href={'#/recipe/' + recipe.id}>
+					<img src="http://placehold.it/350x150" />
+					<h2>{recipe.title}</h2>
+					<p>
+						{recipe.tag.map((tag, j) => <span key={j}>{tag} </span>)}
+					</p>
+				</a>);
+		let style = {
+			display: 'flex',
+			flexFlow: 'row wrap',
+			justifyContent: 'space-around'
+		};
 		return (
-			<div>
+			<div style={style}>
 				{ recipesList }
 			</div>
-			);
+		);
 	}
 });
 
-var recipesData = [
-	{
-		id: 1,
-		title: 'recipe 1',
-		tag: [51, 52, 111]
+let RecipesContainer = React.createClass({
+	getInitialState: function () {
+		return {
+			recipesFiltered: recipesData,
+			titleFilterBlockId: 0
+		};
 	},
-	{
-		id: 2,
-		title: 'recipe 2',
-		tag: [51, 52, 112]
-	},
-	{
-		id: 3,
-		title: 'recipe 3',
-		tag: [53, 113, 112]
-	}
-	];
 
+	filterElements: function (id) {
+		let recipesFiltered = [];
 
-	let RecipesContainer = React.createClass({
-		getInitialState: function () {
-			return {
-				recipesFiltered: recipesData,
-				titleFilterBlockId: 0
-			};
-		},
-
-		filterElements: function (id) {
-			let recipesFiltered = [];
-
-			if (id) {
-				recipesData.forEach((el) => {
-					if (el.tag.indexOf(id) > -1) {
-						
-						recipesFiltered.push(el);
-					}
-				});
-			} else {
-				recipesFiltered = recipesData;
-			}
-
-
-			this.setState({
-				recipesFiltered: recipesFiltered,
-				titleFilterBlockId: id
+		if (id !== '0') {
+			recipesData.forEach((el) => {
+				if (el.tag.indexOf(id) > -1) {
+					recipesFiltered.push(el);
+				}
 			});
-		},
-
-		render: function () {
-			let recipesFiltered = this.state.recipesFiltered,
-				titleFilterBlockId = this.state.titleFilterBlockId;
-			return (
-				<div className="container">
-					<Filters filterElements={this.filterElements} activeFilter={titleFilterBlockId} />
-					<Recipes data={recipesFiltered} />
-				</div>
-			);
+		} else {
+			recipesFiltered = recipesData;
 		}
 
-	});
+
+		this.setState({
+			recipesFiltered: recipesFiltered,
+			titleFilterBlockId: id
+		});
+	},
+
+	render: function () {
+		let recipesFiltered = this.state.recipesFiltered,
+			titleFilterBlockId = this.state.titleFilterBlockId;
+		return (
+			<div className="container">
+				<Filters filterElements={this.filterElements} activeFilter={titleFilterBlockId} />
+				<Recipes data={recipesFiltered} />
+			</div>
+		);
+	}
+
+});
 
 
-	let Index = React.createClass({
+let Index = React.createClass({
 
-		render: function () {
+	render: function () {
+		let style = {textAlign: 'center'};
+		return (
+			<main>
+				<h1 style={style}>
+					Prova le prelibatezze della cucina di<br />
+					Snello Gusto e Benessere
+				</h1>
+				<RecipesContainer />
+			</main>
+		);
+	}
+});
 
-			return (
-				<main>
-					<h1>
-						Prova le prelibatezze della cucina di<br />
-						Snello Gusto e Benessere
-					</h1>
-					<RecipesContainer />
-				</main>
-			);
-		}
-	});
-
-	export default Index;
+export default Index;
